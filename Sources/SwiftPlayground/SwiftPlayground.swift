@@ -29,10 +29,15 @@ struct SwiftPlayground {
 
         // Extra newline for formatting
         print()
-        print("Total cost: \(totalCosts(lunches))")
+
+        // Basic information from variables and functions
+        print("Total cost of lunches: $\(totalCosts(lunches))")
+        print("Total cost of snacks:  $\(snackTotal)")
+        print("Combined total cost:   $\(snackTotal + totalCosts(lunches))")
+        print("Average lunch cost:    $\(averageCost(lunches))")
 
         // Check if the user is over budget and print the corresponding string
-        print(isOverBudget(total: totalCosts(lunches), budget: budget) ? 
+        print(isOverBudget(total: totalCosts(lunches), budget: budget) ?
         "Warning: You are over budget!" : "You are under budget")
 
     }
