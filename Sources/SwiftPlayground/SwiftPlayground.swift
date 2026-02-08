@@ -38,7 +38,7 @@ struct SwiftPlayground {
 
         // Check if the user is over budget and print the corresponding string
         print(isOverBudget(total: totalCosts(lunches), budget: budget) ?
-        "Warning: You are over budget!" : "You are under budget")
+        "Warning: You are over budget!" : "You are under budget!")
 
     }
 }
