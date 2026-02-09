@@ -4,26 +4,32 @@
 @main
 struct SwiftPlayground {
     static func main() {
-        // Constants
-        let lunches: [Double] = [6.50, 8.00, 5.75, 9.20, 7.10]
-        let budget: Double = 37.00
+        // Basic constants
+        let lunchPrices: [Double] = [6.50, 8.00, 5.75, 9.20, 7.10]
+        let budget: Double = 35.00
+        let highCostLunch: Double = 9.00
+
+        // Snack constants
         let snackCost: Double = 2.50
+        let snackBudget: Double = 10.00
 
         var snackTotal: Double = 0
 
+        // Output budget
         print("Your budget: $\(budget)\n")
 
         // Enumerate through the days
-        lunches.enumerated().forEach {(day, cost) in
+        lunchPrices.enumerated().forEach {(day, cost) in
             // Print the lunch cost for the day
             print("Day \(day + 1) cost: $\(cost)")
             // Show if the day is high spending day
-            if cost > 9.00 {
+            if cost > highCostLunch {
                 print("High spending day detected!")
             }
         }
 
-        while snackTotal < 10.00 {
+        // Snack coalculation
+        while snackTotal < snackBudget {
             snackTotal += snackCost
         }
 
@@ -31,15 +37,17 @@ struct SwiftPlayground {
         print()
 
         // Basic information from variables and functions
-        print("Total cost of lunches: $\(totalCosts(lunches))")
+        print("Total cost of lunches: $\(totalCosts(lunchPrices))")
         print("Total cost of snacks:  $\(snackTotal)")
-        print("Combined total cost:   $\(snackTotal + totalCosts(lunches))")
-        print("Average lunch cost:    $\(averageCost(lunches))")
+        print("Combined total cost:   $\(snackTotal + totalCosts(lunchPrices))")
+        print("Average lunch cost:    $\(averageCost(lunchPrices))")
 
         // Check if the user is over budget and print the corresponding string
-        print(isOverBudget(total: totalCosts(lunches), budget: budget) ?
+        print(isOverBudget(total: totalCosts(lunchPrices), budget: budget) ?
         "Warning: You are over budget!" : "You are under budget!")
 
+        // Most expensive language
+        print("Most expensive lunch:  $\(highestCostLunch(lunchPrices))")
     }
 }
 
@@ -62,6 +70,7 @@ func totalCosts(_ prices: [Double]) -> Double {
 /// - Returns: If the total is greater than the budgets
 func isOverBudget(total: Double, budget: Double) -> Bool {
     return total > budget
+
 }
 
 /// Function to get the average cost of prices over the week
@@ -70,4 +79,14 @@ func isOverBudget(total: Double, budget: Double) -> Bool {
 func averageCost(_ prices: [Double]) -> Double {
     let total = totalCosts(prices)
     return total / Double(prices.count)
+}
+
+func highestCostLunch(_ prices: [Double]) -> Double {
+    var max: Double = 0.00
+    prices.forEach({ price in
+        if price > max {
+            max = price
+        }
+    })
+    return max
 }
