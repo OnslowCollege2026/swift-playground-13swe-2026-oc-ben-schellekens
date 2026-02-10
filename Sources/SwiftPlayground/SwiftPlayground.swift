@@ -28,7 +28,7 @@ struct SwiftPlayground {
             }
         }
 
-        // Snack coalculation
+        // Snack calculation
         while snackTotal < snackBudget {
             snackTotal += snackCost
         }
@@ -74,13 +74,16 @@ func isOverBudget(total: Double, budget: Double) -> Bool {
 }
 
 /// Function to get the average cost of prices over the week
-/// - Parameter prices: The prices of all the lunches
+/// - Parameter prices: List of prices of all the lunches
 /// - Returns: The average cost of the lunches over the week
 func averageCost(_ prices: [Double]) -> Double {
-    let total = totalCosts(prices)
+    let total: Double = totalCosts(prices)
     return total / Double(prices.count)
 }
 
+/// Takes a list of prices and finds the highest one
+/// - Parameter prices: List of prices of all the lunches
+/// - Returns: The highest price in the list
 func highestCostLunch(_ prices: [Double]) -> Double {
     var max: Double = 0.00
     prices.forEach({ price in
