@@ -9,6 +9,7 @@ struct SwiftPlayground {
 
         // Inputs for the different tasks
         let numbers: [Int] = [1, 2, 3, 4, 5]
+        let otherNumbers: [Int] = [7, 14, 21, 28, 35]
         let words: [String] = ["apple", "banana", "grape", "strawberry", "kiwi"]
         let scores: [Int] = [45, 78, 89, 32, 50, 92, 67, 41, 99, 56]
 
@@ -21,10 +22,8 @@ struct SwiftPlayground {
         // Add up the numbers to get the sum
         let numbersSum: Int = evenNumbers.reduce(0) { $0 + $1 }
 
-        // Print out different steps
-        print(cubedNumbers)
-        print(evenNumbers)
-        print(numbersSum)
+        // Calculate the product of otherNumbers.
+        let product: Int = otherNumbers.reduce(1) { $0 * $1 }
 
         // Set words list
 
