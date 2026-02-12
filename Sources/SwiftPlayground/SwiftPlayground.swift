@@ -1,12 +1,13 @@
-// The Swift Programming Language
-// https://docs.swift.org/swift-book
+// Map, Filter, Reduce
 
 @main
 struct SwiftPlayground {
     static func main() {
-
+        // Basic constants
         let passingScore = 50
+        let scoreCurve = 5
 
+        // Inputs for the different tasks
         let numbers: [Int] = [1, 2, 3, 4, 5]
         let words: [String] = ["apple", "banana", "grape", "strawberry", "kiwi"]
         let scores: [Int] = [45, 78, 89, 32, 50, 92, 67, 41, 99, 56]
@@ -33,27 +34,17 @@ struct SwiftPlayground {
         // Print the longest word
         print(longestWord)
 
-        // Scores input
-
         // Curve the scores by adding 5
-        let curvedScores = scores.map { $0 + 5 }
+        let curvedScores = scores.map { $0 + scoreCurve }
 
         // Filter for passing scores
         let passingScores = curvedScores.filter { $0 >= passingScore }
 
-        let scoresSum = curvedScores.reduce(0, +)
-
-        let averageScore = scoresSum / passingScores.count
+        // Get the sum of passing scores and divide them by the amount to get the average
+        let averageScore = passingScores.reduce(0, +) / passingScores.count
 
         print(curvedScores)
         print(passingScores)
-    }
-}
-
-func reduce(_ partialResult: String, _ word: String) -> String {
-    if word.count > partialResult.count {
-        return word
-    } else {
-        return partialResult
+        print(averageScore)
     }
 }
