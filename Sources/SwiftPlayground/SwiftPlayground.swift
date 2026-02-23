@@ -61,7 +61,29 @@ struct SwiftPlayground {
         
         let largestRectangle: Rectangle = rects.max {$0.area() < $1.area()} ?? Rectangle(width: 0, height: 0)
         print("Largest rectangle: \(largestRectangle.area())")
+
+        let questBoard: [Quest] = [
+            Quest(title: "Video game", difficulty: Difficulty.easy, reward: 29),
+            Quest(title: "Make 64 iron pickaxes", difficulty: Difficulty.medium, reward: 93),
+            Quest(title: "Funny quest", difficulty: Difficulty.hard, reward: Int.min)
+        ]
+
+        questBoard.forEach {print($0.badge)}
+
+        let hardestQuest: Quest = questBoard.reduce(questBoard[0]) {
+            $0.difficulty.rawValue > $1.difficulty.rawValue ? $0 : $1 
+        }
+
+        print("Hardest quest: \(hardestQuest.badge)")
+
     }
+}
+
+
+enum Difficulty: Int {
+    case easy = 0
+    case medium = 1
+    case hard = 2
 }
 
 struct Student {
@@ -110,5 +132,15 @@ struct Rectangle {
 
     func area() -> Double {
         return width * height
+    }
+}
+
+struct Quest {
+    let title: String
+    let difficulty: Difficulty
+    let reward: Int
+
+    var badge: String {
+        "\(title) - \(difficulty) Quest - \(reward) XP "
     }
 }
