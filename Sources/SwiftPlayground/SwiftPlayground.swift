@@ -123,7 +123,7 @@ struct Student {
     }
 }
 
-/// Struct for a car
+// Struct for a car
 struct Car {
     let brand: String
     let model: String
@@ -134,6 +134,7 @@ struct Car {
     }
 }
 
+// Struct for a bank account
 struct BankAccount {
     var owner: String
     var balance: Double
@@ -143,6 +144,7 @@ struct BankAccount {
     }
 }
 
+// Struct for a rectangle
 struct Rectangle {
     var width: Double
     var height: Double
@@ -152,6 +154,7 @@ struct Rectangle {
     }
 }
 
+// Struct for a quest
 struct Quest {
     let title: String
     let difficulty: Difficulty
