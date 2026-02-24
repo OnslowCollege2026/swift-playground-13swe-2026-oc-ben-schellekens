@@ -28,7 +28,7 @@ struct SwiftPlayground {
             (name: "wisp", score: 2),
         ]
         let testString: String = "moonlight"
-
+        // --- TASK A ---
         // Remove non-numbers from mixed
         let numbers: [Int] = mixed.compactMap { Int($0) }
 
@@ -48,12 +48,32 @@ struct SwiftPlayground {
         let highestScore: Int = sightingScores.max { $0 < $1 } ?? 0
         let lowestScore: Int = sightingScores.min { $0 < $1 } ?? 0
 
+        // --- TASK C ---
+
         // Check if the test string is valid (more than 8 characters)
-        let testStringAccepted: Bool = accepts(testString, isValid: { $0.count > 8 })
+        let sampleIsLowercase: Bool = accepts(testString, isValid: { $0.allSatisfy( {$0.isLowercase} ) })
+        let sampleLessThan8Chars: Bool = accepts(testString, isValid: { $0.count > 8 })
 
         // TODO: archive task
+        let wing = archive.last { wing in 
+            wing.contains { room in 
+                room.contains { shelf in
+                    shelf.contains { $0.hasPrefix("e") }
+                }
+            }
+        }!
 
+        let room = wing.last { room in
+            room.contains { shelf in
+                shelf.contains { $0.count == 4 }
+            }
+        }!
 
+        let shelf = room.last { shelf in
+            shelf.contains { $0.contains("e") }
+        }!
+
+        let word = shelf.first { $0.hasPrefix("e") }!
         // Print out answers
         print("Numbers in mixed \(numbers)")
 
@@ -64,7 +84,14 @@ struct SwiftPlayground {
         print(highestScore)
         print(lowestScore)
 
-        print(testStringAccepted ? "The string is valid" : "Nope change it")
+        print(sampleIsLowercase ? "The string is lowercase" : "Nope change it")
+        print(sampleLessThan8Chars ? "The string is less than 8 char" : "Nope change it")
+
+        print(wing)
+        print(room)
+        print(shelf)
+        print(word)
+        
     }
 }
 
