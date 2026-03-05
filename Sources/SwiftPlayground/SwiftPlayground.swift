@@ -5,7 +5,27 @@ import Foundation
 @main
 struct SwiftPlayground {
     static func main() {
-        print("Hello, world!")
+        let receipts: [Receipt] = rentals.map { rental in
+            let videoWithID: Video =
+                videos.first { $0.id == rental.videoID }
+                ?? Video(id: UUID(), title: "", dailyRate: 0)
+            return Receipt(
+                videoID: rental.videoID, customerID: rental.customerID,
+                pricePaid: videoWithID.dailyRate * Double(rental.dayToReturn - rental.dayIssued),
+                overdueFeeCharged: rental.wasReturned
+            )
+
+        }
+
+        receipts.forEach { receipt in
+            let video: Video =         
+                videos.first { $0.id == receipt.videoID }
+                ?? Video(id: UUID(), title: "", dailyRate: 0)
+            let customer: Customer =         
+                customers.first { $0.id == receipt.customerID }
+                ?? Customer(id: UUID(), name: "", address: "")
+            print("Receipt | Customer: \(customer.name) | Video: \(video.title) | Base: $\(String(format: "%.2f",  receipt.pricePaid)) | Overdue: \(receipt.overdueFeeCharged ? "Yes" : "No")")
+        }
     }
 }
 
