@@ -43,16 +43,16 @@ struct Customer: Identifiable {
 }
 
 struct VideoRental {
-    let videoID: Video.ID
-    let customerID: Customer.ID
+    let video: Video
+    let customer: Customer
     let dayIssued: Int
     let dayToReturn: Int
     let wasReturned: Bool
 }
 
 struct Receipt {
-    let videoID: Video.ID
-    let customerID: Customer.ID
+    let video: Video
+    let customer: Customer
     let pricePaid: Double
     let overdueFeeCharged: Bool
 }
@@ -75,28 +75,28 @@ let customers: [Customer] = [
 
 let rentals: [VideoRental] = [
     VideoRental(
-        videoID: videos[0].id,
-        customerID: customers[0].id,
+        video: videos[0],
+        customer: customers[0],
         dayIssued: 1, dayToReturn: 3,
         wasReturned: true),
     VideoRental(
-        videoID: videos[1].id,
-        customerID: customers[1].id,
+        video: videos[1],
+        customer: customers[1],
         dayIssued: 2, dayToReturn: 4,
         wasReturned: false),
     VideoRental(
-        videoID: videos[2].id,
-        customerID: customers[2].id,
+        video: videos[2],
+        customer: customers[2],
         dayIssued: 2, dayToReturn: 5,
         wasReturned: true),
     VideoRental(
-        videoID: videos[3].id,
-        customerID: customers[3].id,
+        video: videos[3],
+        customer: customers[3],
         dayIssued: 3, dayToReturn: 6,
         wasReturned: false),
     VideoRental(
-        videoID: videos[4].id,
-        customerID: customers[4].id,
+        video: videos[4],
+        customer: customers[4],
         dayIssued: 4, dayToReturn: 6,
         wasReturned: true),
 ]
