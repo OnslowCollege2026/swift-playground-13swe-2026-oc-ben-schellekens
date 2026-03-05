@@ -55,6 +55,35 @@ struct SwiftPlayground {
         ]
 
         print(enrolments)
+
+        let jules: Student = Student(id: UUID(), name: "Jules", age: 16)
+        let stan: Student = Student(id: UUID(), name: "Stan", age: 17)
+        let ash: Student = Student(id: UUID(), name: "Ash", age: 18)
+        
+        let SWE: Course = Course(id: "13SWE", title: "Sweet Food in Hospitality", courseDescription: "Sweet food in hospitality")
+
+        let julesInSwe: Enrolment = Enrolment(studentID: jules.id, courseID: SWE.id)
+        let stanInSwe: Enrolment = Enrolment(studentID: stan.id, courseID: SWE.id)
+
+        let badEnrolment: Enrolment = Enrolment(studentID: stan.id, courseID: SWE.id)
+
+        let p3Enrolments: Set<Enrolment> = [
+            julesInSwe,
+            stanInSwe,
+
+            badEnrolment
+        ]
+
+        print(p3Enrolments.count)
+
+        let julesScore: ScoreEntry = ScoreEntry(studentID: jules.id, points: 55)
+        let stanScore: ScoreEntry = ScoreEntry(studentID: stan.id, points: 50)        
+        let ashScore: ScoreEntry = ScoreEntry(studentID: ash.id, points: 55)
+
+        let studentScores: [ScoreEntry] = [julesScore, stanScore]
+
+        print(studentScores.sorted())
+        print(ashScore == julesScore ? "Ash and jules have an equal score" : "Ash and jules' scores are inequal")
     }
 }
 
