@@ -1,5 +1,6 @@
 // Written by Ben schellekens
 // 06-03-2025
+
 import Foundation
 
 @main
