@@ -1,5 +1,5 @@
-// The Swift Programming Language
-// https://docs.swift.org/swift-book
+// Written by Ben schellekens
+// 06-03-2025
 import Foundation
 
 @main
