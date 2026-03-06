@@ -53,6 +53,23 @@ struct SwiftPlayground {
         }
 
         print(bills[0].description)
+
+        let encoder = JSONEncoder()
+        encoder.outputFormatting = [.prettyPrinted, .sortedKeys]
+
+        do {
+            let data = try encoder.encode(bills)
+            let url = URL(fileURLWithPath: FileManager.default.currentDirectoryPath)
+                .appendingPathComponent("customer_bills.json")
+
+            try data.write(to: url)
+            print("Saved JSON to: \(url.path)")
+
+            let readBack = try String(contentsOf: url, encoding: .utf8)
+            print(readBack)
+        } catch {
+            print("JSON save/load failed: \(error)")
+        }
     }
 }
 
