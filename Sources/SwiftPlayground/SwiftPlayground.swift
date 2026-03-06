@@ -38,7 +38,7 @@ struct SwiftPlayground {
                 "Overdue notice sent to: \( receipt.customer.name ), \( receipt.customer.address )")
         }
 
-        let totalOverdueFees: Double = overdueRecepits.reduce(0) { total, _ in total + 2.00 }
+        let totalOverdueFees: Double = overdueRecepits.reduce(0) { total, _ in total + overdueFee }
         print("Total overdue fees collected: $\(String(format: "%.2f", totalOverdueFees))")
 
         let bills: [CustomerBill] = overdueRecepits.map {
@@ -47,12 +47,15 @@ struct SwiftPlayground {
 
         bills.sorted().reversed().forEach { bill in
             print(
-                "Customer \"\(bill.customer.name)\" had a fee of $\(bill.receipt.pricePaid + 2.00)")
+                "Customer \"\(bill.customer.name)\" had a fee of $\(bill.receipt.pricePaid)"
+            )
         }
 
         print(bills[0].description)
     }
 }
+
+let overdueFee: Double = 2.00
 
 struct Video: Identifiable, Hashable, Codable {
     let id: UUID
@@ -91,7 +94,7 @@ struct CustomerBill: CustomStringConvertible, Equatable, Comparable, Hashable, C
 
         Our records show that "\(receipt.video.title)" was overdue.
         Base rental paid: $\(String(format: "%.2f", receipt.pricePaid))
-        Overdue fee now due: $2.00
+        Overdue fee now due: $\(overdueFee)
 
         Please pay this amount at your earliest convenience.
         Store Billing Team
@@ -99,13 +102,11 @@ struct CustomerBill: CustomStringConvertible, Equatable, Comparable, Hashable, C
     }
 
     static func == (lhs: CustomerBill, rhs: CustomerBill) -> Bool {
-        lhs.receipt.pricePaid + (lhs.receipt.overdueFeeCharged ? 2.00 : 0.00) == rhs.receipt
-            .pricePaid + (lhs.receipt.overdueFeeCharged ? 2.00 : 0.00)
+        lhs.receipt.pricePaid == rhs.receipt.pricePaid
     }
 
     static func < (lhs: CustomerBill, rhs: CustomerBill) -> Bool {
-        lhs.receipt.pricePaid + (lhs.receipt.overdueFeeCharged ? 2.00 : 0.00) < rhs.receipt
-            .pricePaid + (lhs.receipt.overdueFeeCharged ? 2.00 : 0.00)
+        lhs.receipt.pricePaid < rhs.receipt.pricePaid
     }
 }
 
