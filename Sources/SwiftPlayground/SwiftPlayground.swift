@@ -15,7 +15,8 @@ struct SwiftPlayground {
                 // Video             Customer
                 video: rental.video, customer: rental.customer,
                 // Price paid for the video
-                pricePaid: rental.video.dailyRate * Double(rental.dayToReturn - rental.dayIssued),
+                pricePaid: (rental.video.dailyRate * Double(rental.dayToReturn - rental.dayIssued))
+                    + overdueFee,
                 // Whether the overdue fee should be charged
                 overdueFeeCharged: rental.wasReturned
             )
