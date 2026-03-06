@@ -6,15 +6,23 @@ import Foundation
 @main
 struct SwiftPlayground {
     static func main() {
+        // Task 1 part 1:
+
+        // Map video rentals into receipts:
         let receipts: [Receipt] = rentals.map { rental in
+            // Create a new receipts
             return Receipt(
+                // Video             Customer
                 video: rental.video, customer: rental.customer,
+                // Price paid for the video
                 pricePaid: rental.video.dailyRate * Double(rental.dayToReturn - rental.dayIssued),
+                // Whether the overdue fee should be charged
                 overdueFeeCharged: rental.wasReturned
             )
 
         }
 
+        // For each receipt
         receipts.forEach { receipt in
             print("Receipt | Customer: \(receipt.customer.name) | Video: \(receipt.video.title) | Base: $\(String(format: "%.2f",  receipt.pricePaid)) | Overdue: \(receipt.overdueFeeCharged ? "Yes" : "No")")
         }
