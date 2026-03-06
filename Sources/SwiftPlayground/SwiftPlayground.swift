@@ -24,8 +24,23 @@ struct SwiftPlayground {
 
         // For each receipt
         receipts.forEach { receipt in
-            print("Receipt | Customer: \(receipt.customer.name) | Video: \(receipt.video.title) | Base: $\(String(format: "%.2f",  receipt.pricePaid)) | Overdue: \(receipt.overdueFeeCharged ? "Yes" : "No")")
+            // Print information in format
+            print(
+                "Receipt | Customer: \(receipt.customer.name) | Video: \(receipt.video.title) | Base: $\(String(format: "%.2f",  receipt.pricePaid)) | Overdue: \(receipt.overdueFeeCharged ? "Yes" : "No")"
+            )
         }
+
+        // Filter for only overdue receipts
+        let overdueRecepits: [Receipt] = receipts.filter { $0.overdueFeeCharged }
+        // Print out a message for each receipt
+        overdueRecepits.forEach { receipt in
+            print(
+                "Overdue notice sent to: \( receipt.customer.name ), \( receipt.customer.address )")
+        }
+
+        let totalOverdueFees: Double = overdueRecepits.reduce(0) { total, _ in total + 2.00 }
+        print("Total overdue fees collected: $\(String(format: "%.2f", totalOverdueFees))")
+
     }
 }
 
