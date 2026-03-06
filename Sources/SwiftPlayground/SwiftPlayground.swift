@@ -38,22 +38,27 @@ struct SwiftPlayground {
             print(
                 "Overdue notice sent to: \( receipt.customer.name ), \( receipt.customer.address )")
         }
-
+        
+        // Calculate total money collected from overdue fees
         let totalOverdueFees: Double = overdueRecepits.reduce(0) { total, _ in total + overdueFee }
         print("Total overdue fees collected: $\(String(format: "%.2f", totalOverdueFees))")
 
+        // Convert each receipt to a CustomerBill
         let bills: [CustomerBill] = overdueRecepits.map {
             CustomerBill(customer: $0.customer, receipt: $0)
         }
 
+        // Sort bills by size descending, reversed and iterate through each one
         bills.sorted().reversed().forEach { bill in
             print(
                 "Customer \"\(bill.customer.name)\" had a fee of $\(bill.receipt.pricePaid)"
             )
         }
 
+        // Print the first bill's description
         print(bills[0].description)
 
+        // Doc this is your code
         let encoder = JSONEncoder()
         encoder.outputFormatting = [.prettyPrinted, .sortedKeys]
 
@@ -73,20 +78,24 @@ struct SwiftPlayground {
     }
 }
 
+// Set the overdue fee
 let overdueFee: Double = 2.00
 
+/// Struct to store the data of a video
 struct Video: Identifiable, Hashable, Codable {
     let id: UUID
     let title: String
     let dailyRate: Double
 }
 
+/// Struct to store customer information
 struct Customer: Identifiable, Hashable, Codable {
     let id: UUID
     let name: String
     let address: String
 }
 
+/// Struct to store information about a rented video
 struct VideoRental: Hashable, Codable {
     let video: Video
     let customer: Customer
@@ -95,6 +104,7 @@ struct VideoRental: Hashable, Codable {
     let wasReturned: Bool
 }
 
+/// Struct to store info about the price a VideoRental costed a customer
 struct Receipt: Hashable, Codable {
     let video: Video
     let customer: Customer
@@ -102,6 +112,7 @@ struct Receipt: Hashable, Codable {
     let overdueFeeCharged: Bool
 }
 
+// Extra helpers for storing rental data
 struct CustomerBill: CustomStringConvertible, Equatable, Comparable, Hashable, Codable {
     let customer: Customer
     let receipt: Receipt
@@ -128,6 +139,7 @@ struct CustomerBill: CustomStringConvertible, Equatable, Comparable, Hashable, C
     }
 }
 
+// Video data
 let videos: [Video] = [
     Video(id: UUID(), title: "The Matrix", dailyRate: 4.50),
     Video(id: UUID(), title: "Toy Story", dailyRate: 3.00),
@@ -136,6 +148,7 @@ let videos: [Video] = [
     Video(id: UUID(), title: "Moana", dailyRate: 3.50),
 ]
 
+// Customer data
 let customers: [Customer] = [
     Customer(id: UUID(), name: "Aroha Ngata", address: "14 Kowhai Street"),
     Customer(id: UUID(), name: "Liam Patel", address: "8 Tui Avenue"),
@@ -144,6 +157,7 @@ let customers: [Customer] = [
     Customer(id: UUID(), name: "Eva Chen", address: "11 Nikau Place"),
 ]
 
+// Rental information
 let rentals: [VideoRental] = [
     VideoRental(
         video: videos[0],
