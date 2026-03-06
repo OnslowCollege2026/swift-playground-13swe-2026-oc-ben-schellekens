@@ -41,6 +41,15 @@ struct SwiftPlayground {
         let totalOverdueFees: Double = overdueRecepits.reduce(0) { total, _ in total + 2.00 }
         print("Total overdue fees collected: $\(String(format: "%.2f", totalOverdueFees))")
 
+        let bills: [CustomerBill] = overdueRecepits.map {
+            CustomerBill(customer: $0.customer, receipt: $0)
+        }
+
+        bills.sorted().reversed().forEach { bill in 
+            print("Customer \"\(bill.customer.name)\" had a fee of $\(bill.receipt.pricePaid + 2.00)")
+        }
+
+        print(bills[0].description)
     }
 }
 
