@@ -45,8 +45,9 @@ struct SwiftPlayground {
             CustomerBill(customer: $0.customer, receipt: $0)
         }
 
-        bills.sorted().reversed().forEach { bill in 
-            print("Customer \"\(bill.customer.name)\" had a fee of $\(bill.receipt.pricePaid + 2.00)")
+        bills.sorted().reversed().forEach { bill in
+            print(
+                "Customer \"\(bill.customer.name)\" had a fee of $\(bill.receipt.pricePaid + 2.00)")
         }
 
         print(bills[0].description)
