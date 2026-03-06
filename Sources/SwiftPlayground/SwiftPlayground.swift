@@ -71,6 +71,34 @@ struct Receipt {
     let overdueFeeCharged: Bool
 }
 
+struct CustomerBill: CustomStringConvertible, Equatable, Comparable {
+    let customer: Customer
+    let receipt: Receipt
+
+    var description: String {
+        """
+        Kia ora \(customer.name),
+
+        Our records show that "\(receipt.video.title)" was overdue.
+        Base rental paid: $\(String(format: "%.2f", receipt.pricePaid))
+        Overdue fee now due: $2.00
+
+        Please pay this amount at your earliest convenience.
+        Store Billing Team
+        """
+    }
+
+    static func == (lhs: CustomerBill, rhs: CustomerBill) -> Bool {
+        lhs.receipt.pricePaid + (lhs.receipt.overdueFeeCharged ? 2.00 : 0.00) == rhs.receipt
+            .pricePaid + (lhs.receipt.overdueFeeCharged ? 2.00 : 0.00)
+    }
+
+    static func < (lhs: CustomerBill, rhs: CustomerBill) -> Bool {
+        lhs.receipt.pricePaid + (lhs.receipt.overdueFeeCharged ? 2.00 : 0.00) < rhs.receipt
+            .pricePaid + (lhs.receipt.overdueFeeCharged ? 2.00 : 0.00)
+    }
+}
+
 let videos: [Video] = [
     Video(id: UUID(), title: "The Matrix", dailyRate: 4.50),
     Video(id: UUID(), title: "Toy Story", dailyRate: 3.00),
