@@ -54,19 +54,19 @@ struct SwiftPlayground {
     }
 }
 
-struct Video: Identifiable {
+struct Video: Identifiable, Hashable, Codable {
     let id: UUID
     let title: String
     let dailyRate: Double
 }
 
-struct Customer: Identifiable {
+struct Customer: Identifiable, Hashable, Codable {
     let id: UUID
     let name: String
     let address: String
 }
 
-struct VideoRental {
+struct VideoRental: Hashable, Codable {
     let video: Video
     let customer: Customer
     let dayIssued: Int
@@ -74,14 +74,14 @@ struct VideoRental {
     let wasReturned: Bool
 }
 
-struct Receipt {
+struct Receipt: Hashable, Codable {
     let video: Video
     let customer: Customer
     let pricePaid: Double
     let overdueFeeCharged: Bool
 }
 
-struct CustomerBill: CustomStringConvertible, Equatable, Comparable {
+struct CustomerBill: CustomStringConvertible, Equatable, Comparable, Hashable, Codable {
     let customer: Customer
     let receipt: Receipt
 
