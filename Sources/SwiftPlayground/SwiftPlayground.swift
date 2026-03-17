@@ -9,11 +9,30 @@ struct SwiftPlayground {
         guard let dbQueue = try? DatabaseQueue(path: dbPath) else {
             fatalError("Could not open database.")
         }
+
+        let purchaserID: Int = 2
+        let purchaserName: String = "Dylan Jenkins"
+
         do {
             try dbQueue.read { db in
-                let schema = try db.dumpSchema()
-                print(schema)
+                let purchaser = try Purchaser.fetchOne(db, key: purchaserID)
+                if let purchaser {
+                    print("Found purchaser: \(purchaser.name)")
+                } else {
+                    print("No purchaser with id \(purchaserID)")
+                }
+
+                let purchaserFromName = try Purchaser.filter(
+                    Purchaser.Columns.Name == purchaserName
+                ).fetchOne(db)
+
+                if let purchaserFromName {
+                    print("\( purchaserFromName.name ) is with \(purchaserFromName.count) people")
+                } else {
+                    print("No purchaser named \(purchaserName)")
+                }
             }
+
         } catch {}
     }
 }
