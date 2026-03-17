@@ -18,7 +18,7 @@ struct SwiftPlayground {
     }
 }
 
-struct Purchaser: Codable, FetchableRecord, PersistableRecord {
+struct Purchaser: Identifiable, Codable, FetchableRecord, PersistableRecord {
     var id: Int64
     var name: String
     var count: Int
@@ -30,40 +30,61 @@ struct Purchaser: Codable, FetchableRecord, PersistableRecord {
         case count = "Count"
         case reservedTable = "ReservedTable"
     }
+
+    enum Columns {
+        static let Name = Column("Name")
+        static let Count = Column("Count")
+        static let ReservedTable = Column("ReservedTable")
+    }
 }
 
-struct Item: Codable, FetchableRecord, PersistableRecord {
-    var itemID: Int64
+struct Item: Identifiable, Codable, FetchableRecord, PersistableRecord {
+    var id: Int64
     var name: String
     var price: Double
 
     enum CodingKeys: String, CodingKey {
-        case itemID = "ItemID"
+        case id = "ItemID"
         case name = "Name"
         case price = "Price"
     }
+
+    enum Columns {
+        static let Name = Column("Name")
+        static let Price = Column("Price")
+    }
 }
 
-struct Order: Codable, FetchableRecord, PersistableRecord {
-    var orderID: Int64
+struct Order: Identifiable, Codable, FetchableRecord, PersistableRecord {
+    var id: Int64
     var purchaserID: Int64
     var amount: Double
 
     enum CodingKeys: String, CodingKey {
-        case orderID = "OrderID"
+        case id = "OrderID"
         case purchaserID = "PurchaserID"
         case amount = "Amount"
     }
+
+    enum Columns {
+        static let PurchaserID = Column("PurchaserID")
+        static let Amount = Column("Amount")
+    }
 }
 
-struct OrderLine: Codable, FetchableRecord, PersistableRecord {
-    var orderID: Int64
+struct OrderLine: Identifiable, Codable, FetchableRecord, PersistableRecord {
+    var id: Int64
     var itemID: Int64
     var quantity: Int
 
     enum CodingKeys: String, CodingKey {
-        case orderID = "OrderID"
+        case id = "OrderID"
         case itemID = "PurchaserID"
         case quantity = "Quantity"
+    }
+
+    enum Columns {
+        static let ItemID = Column("ItemID")
+        static let Quantity = Column("Quantity")
     }
 }
