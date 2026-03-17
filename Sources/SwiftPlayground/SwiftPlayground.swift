@@ -31,6 +31,8 @@ struct SwiftPlayground {
                 } else {
                     print("No purchaser named \(purchaserName)")
                 }
+
+                // let manyPurchasers = try Purchaser.filter()
             }
 
         } catch {}
