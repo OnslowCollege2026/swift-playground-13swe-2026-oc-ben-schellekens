@@ -10,32 +10,63 @@ struct SwiftPlayground {
             fatalError("Could not open database.")
         }
 
-        let purchaserID: Int = 2
-        let purchaserName: String = "Dylan Jenkins"
+        // code to dump schema
+        // do { try dbQueue.read { db in try db.dumpSchema() } } catch {}
+        var orderLines: [OrderLine] = []
+        var total: Double = 0.0
+        var item: Item?
 
         do {
             try dbQueue.read { db in
-                let purchaser = try Purchaser.fetchOne(db, key: purchaserID)
-                if let purchaser {
-                    print("Found purchaser: \(purchaser.name)")
-                } else {
-                    print("No purchaser with id \(purchaserID)")
+                // if let purchaser = try Purchaser.fetchOne(db, key: 1) {
+                //     print(purchaser)
+                // }
+                //
+                // if let noPurchaser = try Purchaser.fetchOne(db, key: Int64.max) {
+                //     print(noPurchaser)
+                // } else {
+                //     print("no purchaser with id \(Int64.max)")
+                // }
+                //
+                // if let item = try Item.fetchOne(db, id: 1) { print(item) }
+
+                if let order = try Order.fetchOne(db, id: 2),
+                    let purchaser = try Purchaser.fetchOne(db, id: order.purchaserID)
+                {
+                    print("Order #\(order.id) for \(purchaser.name) --- $\(order.amount)")
+
+                    orderLines = try OrderLine.filter(
+                        OrderLine.Columns.OrderID == order.id
+                    ).fetchAll(db)
+
+                    print(orderLines)
+
+                    try orderLines.forEach { line in
+
+                        var orderString = ""
+
+                        if let item = try Item.fetchOne(db, id: line.itemID) {
+                            let subtotal = item.price * Double(line.quantity)
+                            total += subtotal
+                            orderString += "\(item)"
+                            orderString += " Subtotal: $\(subtotal)"
+                        }
+                        print(orderString)
+                    }
+                    item = try Item.fetchOne(db, id: orderLines[0].itemID)
                 }
-
-                let purchaserFromName = try Purchaser.filter(
-                    Purchaser.Columns.Name == purchaserName
-                ).fetchOne(db)
-
-                if let purchaserFromName {
-                    print("\( purchaserFromName.name ) is with \(purchaserFromName.count) people")
-                } else {
-                    print("No purchaser named \(purchaserName)")
-                }
-
-                // let manyPurchasers = try Purchaser.filter()
             }
 
-        } catch {}
+            try dbQueue.write { db in
+                if let item {
+                    let newQuantity = 5
+                    orderLines[0].quantity = newQuantity
+
+                    let currentSubtotal = item.price * Double(orderLines[0].quantity)
+                }
+            }
+        } catch { print(error) }
+
     }
 }
 
@@ -70,7 +101,7 @@ struct Purchaser: Identifiable, Codable, FetchableRecord, PersistableRecord, Cus
     }
 }
 
-struct Item: Identifiable, Codable, FetchableRecord, PersistableRecord {
+struct Item: Identifiable, Codable, FetchableRecord, PersistableRecord, CustomStringConvertible {
     static let databaseTableName: String = "Item"
 
     /// The ID of the item
@@ -79,6 +110,10 @@ struct Item: Identifiable, Codable, FetchableRecord, PersistableRecord {
     var name: String
     /// How much the item costs
     var price: Double
+
+    var description: String {
+        "(Item #\(id)) \(name) --- $\(price)"
+    }
 
     enum CodingKeys: String, CodingKey {
         case id = "ItemID"
@@ -99,7 +134,7 @@ struct Order: Identifiable, Codable, FetchableRecord, PersistableRecord {
     var id: Int64
     /// The id of the person who purchaser
     var purchaserID: Int64
-    /// The amount of something
+    /// The cost of the order
     var amount: Double
 
     enum CodingKeys: String, CodingKey {
@@ -126,7 +161,7 @@ struct OrderLine: Codable, FetchableRecord, PersistableRecord {
 
     enum CodingKeys: String, CodingKey {
         case orderID = "OrderID"
-        case itemID = "PurchaserID"
+        case itemID = "ItemID"
         case quantity = "Quantity"
     }
 
