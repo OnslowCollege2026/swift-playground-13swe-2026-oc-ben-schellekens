@@ -40,6 +40,8 @@ struct SwiftPlayground {
 }
 
 struct Purchaser: Identifiable, Codable, FetchableRecord, PersistableRecord {
+    static let databaseTableName: String = "Purchaser"
+
     var id: Int64
     var name: String
     var count: Int
@@ -60,6 +62,8 @@ struct Purchaser: Identifiable, Codable, FetchableRecord, PersistableRecord {
 }
 
 struct Item: Identifiable, Codable, FetchableRecord, PersistableRecord {
+    static let databaseTableName: String = "Item"
+
     var id: Int64
     var name: String
     var price: Double
@@ -77,6 +81,8 @@ struct Item: Identifiable, Codable, FetchableRecord, PersistableRecord {
 }
 
 struct Order: Identifiable, Codable, FetchableRecord, PersistableRecord {
+    static let databaseTableName: String = "Order"
+
     var id: Int64
     var purchaserID: Int64
     var amount: Double
@@ -93,8 +99,10 @@ struct Order: Identifiable, Codable, FetchableRecord, PersistableRecord {
     }
 }
 
-struct OrderLine: Identifiable, Codable, FetchableRecord, PersistableRecord {
-    var id: Int64
+struct OrderLine: Codable, FetchableRecord, PersistableRecord {
+    static let databaseTableName: String = "OrderLine"
+    
+    var orderID: Int64
     var itemID: Int64
     var quantity: Int
 
