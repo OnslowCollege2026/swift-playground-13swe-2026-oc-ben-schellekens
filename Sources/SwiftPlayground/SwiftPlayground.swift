@@ -10,62 +10,52 @@ struct SwiftPlayground {
             fatalError("Could not open database.")
         }
 
-        // code to dump schema
-        // do { try dbQueue.read { db in try db.dumpSchema() } } catch {}
+        var selectedOrder: Order? = nil
         var orderLines: [OrderLine] = []
         var total: Double = 0.0
-        var item: Item?
+        // var item: Item?
 
         do {
             try dbQueue.read { db in
-                // if let purchaser = try Purchaser.fetchOne(db, key: 1) {
-                //     print(purchaser)
-                // }
-                //
-                // if let noPurchaser = try Purchaser.fetchOne(db, key: Int64.max) {
-                //     print(noPurchaser)
-                // } else {
-                //     print("no purchaser with id \(Int64.max)")
-                // }
-                //
-                // if let item = try Item.fetchOne(db, id: 1) { print(item) }
+                if let purchaser = try Purchaser.fetchOne(db, id: 3) {
+                    print(purchaser)
+                }
 
-                if let order = try Order.fetchOne(db, id: 2),
+                if let purchaser = try Purchaser.fetchOne(db, id: 588) {
+                    print(purchaser)
+                } else {
+                    print("Purchaser not found!!!")
+                }
+
+                print()
+
+                if let item = try Item.fetchOne(db, id: 3) {
+                    print(item)
+                }
+
+                if let order = try Order.fetchOne(db, id: 1),
                     let purchaser = try Purchaser.fetchOne(db, id: order.purchaserID)
                 {
-                    print("Order #\(order.id) for \(purchaser.name) --- $\(order.amount)")
+                    print(purchaser)
 
-                    orderLines = try OrderLine.filter(
-                        OrderLine.Columns.OrderID == order.id
-                    ).fetchAll(db)
+                    selectedOrder = order
 
-                    print(orderLines)
+                    orderLines = try OrderLine.filter(OrderLine.Columns.OrderID == order.id)
+                        .fetchAll(db)
 
                     try orderLines.forEach { line in
-
-                        var orderString = ""
-
                         if let item = try Item.fetchOne(db, id: line.itemID) {
-                            let subtotal = item.price * Double(line.quantity)
-                            total += subtotal
-                            orderString += "\(item)"
-                            orderString += " Subtotal: $\(subtotal)"
+                            total += item.price * Double(line.quantity)
                         }
-                        print(orderString)
                     }
-                    item = try Item.fetchOne(db, id: orderLines[0].itemID)
                 }
+
             }
 
             try dbQueue.write { db in
-                if let item {
-                    let newQuantity = 5
-                    orderLines[0].quantity = newQuantity
 
-                    let currentSubtotal = item.price * Double(orderLines[0].quantity)
-                }
             }
-        } catch { print(error) }
+        } catch { print() }
 
     }
 }
