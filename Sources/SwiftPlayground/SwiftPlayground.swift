@@ -93,7 +93,10 @@ import Foundation
             while isRunning {
                 print("\nEnter Name (or 'done'): ", terminator: "")
                 
-                let nameInput = readLine()! 
+                guard let nameInput = readLine(), nameInput.count > 0 else {
+                    print("Name is invalid (too short)")
+                    continue
+                }
 
                 if nameInput.lowercased() == "done" {
                     isRunning = false
