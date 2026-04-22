@@ -39,6 +39,6 @@ struct Loan {
 @main
 struct SwiftPlayground {
     static func main() {
-        print("Hello, world!")
+        print(Book(id: 2, title: "Test Book", author: "Greg test"))
     }
 }
