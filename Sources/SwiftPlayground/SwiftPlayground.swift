@@ -1,5 +1,6 @@
-// The Swift Programming Language
-// https://docs.swift.org/swift-book
+// School library book borrowing system
+// No database (not confident enough)
+import Foundation
 
 @main
 struct SwiftPlayground {
