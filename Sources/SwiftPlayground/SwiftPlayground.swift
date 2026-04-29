@@ -126,5 +126,11 @@ struct SwiftPlayground {
             print($0.isOverdue)
             print()
         }
+
+        while /*program*/ isRunning {
+            _ = getStringFromUser("Test input", from: 5, to: 10)
+
+            print("\u{001b}[92;1;3mInput valid!\u{001b}[0m")
+        }
     }
 }
