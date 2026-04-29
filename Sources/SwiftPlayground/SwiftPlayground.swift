@@ -1,6 +1,22 @@
 // School library book borrowing system
 import Foundation
 
+let yearInSeconds: Double = 3.154e+7
+
+let errorPrefix: String = "\u{001b}[1;31mError:\u{001b}[0m"
+let warnPrefix: String = "\u{001b}[1;31mWarning:\u{001b}[0m"
+let infoPrefix: String = "\u{001b}[1;31mInfo:\u{001b}[0m"
+
+func formatDate(_ date: Date) -> String {
+    let formatter = DateFormatter()
+
+    formatter.dateStyle = .medium
+    formatter.timeStyle = .medium
+    formatter.timeZone = TimeZone(abbreviation: "NZDT")
+
+    return formatter.string(from: date)
+}
+
 /// Struct to represent a book
 struct Book: CustomStringConvertible, Identifiable, Codable, Hashable {
     /// The book's ISBN
