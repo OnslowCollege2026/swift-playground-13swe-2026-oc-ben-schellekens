@@ -48,7 +48,7 @@ struct Borrower: CustomStringConvertible, Identifiable, Codable, Hashable {
     var dateOfBirth: Date
 
     var age: Int {
-        Int(floor((dateOfBirth.timeIntervalSinceNow * -1) / 3.154e+7))
+        Int(floor((dateOfBirth.timeIntervalSinceNow * -1) / yearInSeconds))
     }
 
     var description: String {
