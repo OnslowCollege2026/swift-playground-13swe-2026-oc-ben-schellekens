@@ -72,7 +72,30 @@ struct Loan: CustomStringConvertible {
     }
 
     var description: String {
-        "\(borrower.name)'s issued book \(book.title) (ISBN \(book.id)) is due back \(returnDate)"
+        "\(borrower.firstName)'s issued book \(book.title) (ISBN \(book.id)) is due back \(formatDate(returnDate))"
+    }
+}
+
+func getStringFromUser(_ prompt: String, from min: Int = 1, to max: Int, terminator: String = ": ")
+    -> String
+{
+    while true {
+        print(prompt, terminator: terminator)
+        if let input = readLine() {
+            if input.isEmpty {
+                print("\(errorPrefix) Input invalid (empty string submitted), please try again")
+                continue
+            } else if input.count < min {
+                print("\(errorPrefix) Input length is less than the minimum (\(min) character(s))")
+                continue
+            } else if input.count > max {
+                print("\(errorPrefix) Input length is more than the maximum (\(max) character(s))")
+                continue
+            }
+
+            return input
+        }
+
     }
 }
 
