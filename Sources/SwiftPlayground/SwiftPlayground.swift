@@ -39,7 +39,10 @@ struct Borrower: CustomStringConvertible, Identifiable, Codable, Hashable {
     let id: UUID
 
     /// The name of the borrower.
-    var name: String
+    var firstName: String
+
+    // Last name of the borrower
+    var lastName: String
 
     /// Borrower's date of birth
     var dateOfBirth: Date
@@ -49,7 +52,7 @@ struct Borrower: CustomStringConvertible, Identifiable, Codable, Hashable {
     }
 
     var description: String {
-        ""
+        "Borrower \(firstName) \(lastName) is \(age) year(s) old (Born \(dateOfBirth))"
     }
 }
 
