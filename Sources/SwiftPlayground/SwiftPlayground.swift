@@ -102,18 +102,21 @@ func getStringFromUser(_ prompt: String, from min: Int = 1, to max: Int, termina
 @main
 struct SwiftPlayground {
     static func main() {
-        var books: [Book] = [
+        let isRunning: Bool = true
+        let books: [Book] = [
             Book(id: 50003, title: "Test Book", author: "Greg v. haloumen")
         ]
 
-        var borrowers: [Borrower] = [
-            Borrower(id: UUID(), name: "Greg test", dateOfBirth: Date(timeIntervalSinceNow: -1.261e+8))
+        let borrowers: [Borrower] = [
+            Borrower(
+                id: UUID(), firstName: "Greg", lastName: "test",
+                dateOfBirth: Date(timeIntervalSinceNow: -1.261e+8))
         ]
 
-        var loans: [Loan] = [
+        let loans: [Loan] = [
             Loan(
                 book: books[0], borrower: borrowers[0],
-                returnDate: Date.now)
+                returnDate: Date(timeIntervalSinceNow: 1 * 60 * 60))
         ]
 
         print(borrowers[0].age)
