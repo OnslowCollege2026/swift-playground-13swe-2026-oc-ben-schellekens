@@ -29,18 +29,14 @@ struct Borrower: CustomStringConvertible, Identifiable, Codable, Hashable {
     /// The name of the borrower.
     var firstName: String
 
-    // Last name of the borrower
+    /// Last name of the borrower
     var lastName: String
 
     /// Borrower's date of birth
-    var dateOfBirth: Date
-
-    var age: Int {
-        Int(floor((dateOfBirth.timeIntervalSinceNow * -1) / yearInSeconds))
-    }
+    var age: Int
 
     var description: String {
-        "Borrower \(firstName) \(lastName) is \(age) year(s) old (Born \(dateOfBirth))"
+        "Borrower \(firstName) \(lastName) is \(age) year(s) old"
     }
 
     func hash(into hasher: inout Hasher) {
@@ -59,14 +55,15 @@ struct Loan: CustomStringConvertible, Hashable {
     /// The date the book needs to be returned by
     var returnDate: Date
 
-    var paid: Bool = false
+    var returned: Bool = false
 
     var isOverdue: Bool {
-        returnDate.timeIntervalSinceNow <= 0 && paid == false
+        returnDate.timeIntervalSinceNow <= 0 && returned == false
     }
 
     var description: String {
-        "\(borrower.firstName)'s issued book \(book.title) (ISBN \(book.id)) is due back \(UI.formatDate(returnDate))"
+        let isWas = isOverdue ? "was" : "is"
+        return "\(borrower.firstName)'s issued book \(book.title) (ISBN \(book.id)) \(isWas) due back \(UI.formatDate(returnDate))"
     }
 
     // Hash the book ID, borrower ID and return date together.

@@ -79,18 +79,7 @@ struct UI {
     /// Prefix for printing info messages
     static let infoPrefix: String = "\u{001b}[1;31mInfo:\u{001b}[0m"
 
-    /// Formats a date into a string
-    /// - Parameter date: The date to format
-    /// - Returns: date properly formatted into a string
-    static func formatDate(_ date: Date) -> String {
-        let formatter = DateFormatter()
-
-        formatter.dateStyle = .medium
-        formatter.timeStyle = .medium
-        formatter.timeZone = TimeZone(abbreviation: "NZDT")
-
-        return formatter.string(from: date)
-    }
+    static func formatDate(_ date: Date) -> String { "asd" }
 
     /// Prints message as an error
     /// - Parameter message: The message to output
@@ -107,11 +96,113 @@ struct UI {
             loan.isOverdue
         }
 
-        if overdueLoans.count < 1 { UI.infoPrint("No overdue loans!") }
+        if overdueLoans.count < 1 {
+            UI.infoPrint("No overdue loans!")
+            return
+        }
 
         overdueLoans.forEach({ loan in
             print(loan)
         })
+
+        infoPrint("\(overdueLoans.count) overdue loan(s)")
+    }
+
+    static func manageBooks(books: inout Set<Book>) {
+        print(
+            """
+            \u{001b}[2J\u{001b}[H---Available options---
+            [a]: Add a book
+            [e]: Edit the info of a book
+            [d]: Delete a book
+
+            [B]: go back
+            -----------------------
+            """)
+
+        switch getStringFromUser("Select an option", length: 0...1) {
+        case "b", "":
+            return
+        case "a":
+            addBook(books: &books)
+        case "e":
+            if let wantedBook = findBook(
+                books: books, bookName: getStringFromUser("Search for a book")),
+                let index = books.firstIndex(of: wantedBook)
+            {
+                editBook(books: &books, index: index)
+            } else {
+                print("fuck you")
+            }
+        default:
+            print("Not an option")
+            print("Press enter to continue ...", terminator: "")
+            _ = readLine()
+        }
+    }
+
+    static func addBook(books: inout Set<Book>) {
+        let ISBN: Int = getIntFromUser(
+            "Enter the ISBN-13 of the book", range: 1...9_999_999_999_999)
+        let title: String = getStringFromUser("Enter the author of the book", length: 1...50)
+        let author: String = getStringFromUser("Enter the title of the book", length: 1...50)
+
+        print("Do you want to add the book \(title) by \(author) (ISBN \(ISBN))?")
+        if getStringFromUser("[y]es/[N]o", length: 0...1).lowercased != "y" {
+            UI.infoPrint("Cancelled adding book")
+            return
+        }
+
+        let bookToAdd: Book = Book(id: ISBN, title: title, author: author)
+
+        if books.contains(bookToAdd) {
+            UI.warnPrint("Book already exists!")
+            print("Press enter to continue ...", terminator: "")
+            _ = readLine()
+        } else {
+            books.formUnion([bookToAdd])
+        }
+
+    }
+
+    static func findBook(books: Set<Book>, bookName: String) -> Book? {
+        let filteredBooks = books.filter { book in
+            book.title.contains(bookName)
+        }
+
+        if filteredBooks.count < 1 { return nil }
+        if filteredBooks.count == 1 { return filteredBooks[filteredBooks.startIndex] }
+
+        filteredBooks.enumerated().forEach({ offset, book in
+            print("[\(offset + 1)]: \(book)")
+        })
+
+        let sel = getIntFromUser("Select a book", range: 1...filteredBooks.count) - 1
+
+        return filteredBooks[filteredBooks.index(filteredBooks.startIndex, offsetBy: sel)]
+
+    }
+
+    static func editBook(books: inout Set<Book>, index: Set<Book>.Index) {
+
+    }
+
+    static func addBorrower(borrowers: inout Set<Borrower>) {
+        let id: UUID = UUID()
+        let firstName: String = getStringFromUser("Enter the person's first name", length: 1...50)
+        let lastName: String = getStringFromUser("Enter the person's last name", length: 1...50)
+        let age: Int = getIntFromUser("Enter the user's age", range: 0...150)
+
+        print("Do you want to add the borrower \(firstName) \(lastName) (age \(age))?")
+        if getStringFromUser("[y]es/[N]o", length: 0...1).lowercased != "y" {
+            UI.infoPrint("Cancelled adding person")
+            return
+        }
+
+        let newBorrower: Borrower = Borrower(
+            id: id, firstName: firstName, lastName: lastName, age: age)
+
+        borrowers.formUnion([newBorrower])
     }
 
 }

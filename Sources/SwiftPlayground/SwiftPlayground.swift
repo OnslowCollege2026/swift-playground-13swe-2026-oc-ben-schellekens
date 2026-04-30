@@ -10,7 +10,8 @@ struct SwiftPlayground {
     static func main() {
         var isRunning: Bool = true
 
-        let books: Set<Book> = [
+        var books: Set<Book> = [
+            Book(id: 123, title: "abci", author: "abc"),
             Book(id: 9_780435_124090, title: "The Handmaid's Tale", author: "Margaret Atwood"),
             Book(id: 9_781775_542483, title: "Budget like a legend", author: "Cameron Wislang"),
             Book(
@@ -18,10 +19,9 @@ struct SwiftPlayground {
                 author: "Edith Anderson Feisner"),
         ]
 
-        let borrowers: Set<Borrower> = [
+        var borrowers: Set<Borrower> = [
             Borrower(
-                id: UUID(), firstName: "Greg", lastName: "test",
-                dateOfBirth: Date.distantPast)
+                id: UUID(), firstName: "Greg", lastName: "test", age: 20)
         ]
 
         let loans: Set<Loan> = [
@@ -34,39 +34,48 @@ struct SwiftPlayground {
                 returnDate: Date(timeIntervalSinceNow: -1 * 60 * 60)),
         ]
 
-        print(borrowers.first!)
+        print(books.first!)
 
         UI.showOverdueLoans(loans: loans)
 
+        print(UI.findBook(books: books, bookName: getStringFromUser("Test")) ?? "Fuck you")
+
+        _ = readLine()
+
         while /*program*/ isRunning {
-            print("""
-            Available options:
-            [l]: Manage loans
-            [b]: Manage books
-            [u]: Manage borrowers
+            print(
+                """
+                \u{001b}[2J\u{001b}[H---Available options---
+                [l]: Manage loans
+                [b]: Manage books
+                [u]: Manage borrowers
 
-            [?]: Help
-            [q]: Quit
-            """)
-
+                [?]: Help
+                [q]: Quit
+                -----------------------
+                """)
 
             switch getStringFromUser("Enter an option", length: 1...1).lowercased() {
-                case "l":
+            case "l":
                 print("loans")
-                case "b":
-                print("books")
-                case "u":
+            case "b":
+                UI.manageBooks(books: &books)
+            case "u":
                 print("borrowers")
+                UI.addBorrower(borrowers: &borrowers)
 
-                case "?":
+            case "?":
                 print("Help")
-                case "q":
+            case "q":
                 isRunning = false
-                default:
+            default:
                 print("not an option")
-                
 
             }
         }
+
+        print(loans)
+        print(borrowers)
+        print(books)
     }
 }
