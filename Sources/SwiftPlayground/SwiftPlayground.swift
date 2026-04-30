@@ -32,13 +32,9 @@ struct SwiftPlayground {
                 returnDate: Date(timeIntervalSinceNow: -1 * 60 * 60)),
         ]
 
-        print(borrowers[0].age)
+        print(borrowers.first!)
 
-        loans.forEach {
-            print($0)
-            print($0.isOverdue)
-            print()
-        }
+        UI.showOverdueLoans(loans: loans)
 
         while /*program*/ isRunning {
             _ = getStringFromUser("Test input", from: 5, to: 10)
