@@ -37,9 +37,34 @@ struct SwiftPlayground {
         UI.showOverdueLoans(loans: loans)
 
         while /*program*/ isRunning {
-            _ = getStringFromUser("Test input", from: 5, to: 10)
+            print("""
+            Available options:
+            [l]: Manage loans
+            [b]: Manage books
+            [u]: Manage borrowers
 
-            print("\u{001b}[92;1;3mInput valid!\u{001b}[0m")
+            [?]: Help
+            [q]: Quit
+            """)
+
+
+            switch getStringFromUser("Enter an option", length: 1...1).lowercased() {
+                case "l":
+                print("loans")
+                case "b":
+                print("books")
+                case "u":
+                print("borrowers")
+
+                case "?":
+                print("Help")
+                case "q":
+                isRunning = false
+                default:
+                print("not an option")
+                
+
+            }
         }
     }
 }
