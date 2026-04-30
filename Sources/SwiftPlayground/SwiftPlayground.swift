@@ -1,4 +1,6 @@
 // School library book borrowing system
+// Program entrypoint and other stuff
+
 import Foundation
 
 let yearInSeconds: Double = 3.154e+7
