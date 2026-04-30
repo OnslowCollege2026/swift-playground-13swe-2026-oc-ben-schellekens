@@ -6,21 +6,30 @@ let yearInSeconds: Double = 3.154e+7
 @main
 struct SwiftPlayground {
     static func main() {
-        let isRunning: Bool = true
-        let books: [Book] = [
-            Book(id: 50003, title: "Test Book", author: "Greg v. haloumen")
+        var isRunning: Bool = true
+
+        let books: Set<Book> = [
+            Book(id: 9_780435_124090, title: "The Handmaid's Tale", author: "Margaret Atwood"),
+            Book(id: 9_781775_542483, title: "Budget like a legend", author: "Cameron Wislang"),
+            Book(
+                id: 9_718856_694414, title: "Colour: how to user colour in art and design",
+                author: "Edith Anderson Feisner"),
         ]
 
-        let borrowers: [Borrower] = [
+        let borrowers: Set<Borrower> = [
             Borrower(
                 id: UUID(), firstName: "Greg", lastName: "test",
-                dateOfBirth: Date(timeIntervalSinceNow: -1.261e+8))
+                dateOfBirth: Date.distantPast)
         ]
 
-        let loans: [Loan] = [
+        let loans: Set<Loan> = [
             Loan(
-                book: books[0], borrower: borrowers[0],
-                returnDate: Date(timeIntervalSinceNow: 1 * 60 * 60))
+                book: books[books.startIndex], borrower: borrowers.first!,
+                returnDate: Date(timeIntervalSinceNow: 1 * 60 * 60)),
+
+            Loan(
+                book: books[books.index(books.startIndex, offsetBy: 1)], borrower: borrowers.first!,
+                returnDate: Date(timeIntervalSinceNow: -1 * 60 * 60)),
         ]
 
         print(borrowers[0].age)
