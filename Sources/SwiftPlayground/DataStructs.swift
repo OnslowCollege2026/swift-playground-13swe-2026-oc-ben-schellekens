@@ -2,7 +2,7 @@
 import Foundation
 
 /// Struct to represent a book
-struct Book: CustomStringConvertible, Identifiable, Codable, Hashable {
+struct Book: CustomStringConvertible, Identifiable, Hashable, Equatable {
     /// The book's ISBN13
     let id: Int
 
@@ -12,6 +12,8 @@ struct Book: CustomStringConvertible, Identifiable, Codable, Hashable {
     /// The author of the book
     var author: String
 
+    var genre: String
+
     var description: String {
         "ISBN: \(id) | \(title) by \(author)"
     }
@@ -19,10 +21,14 @@ struct Book: CustomStringConvertible, Identifiable, Codable, Hashable {
     func hash(into hasher: inout Hasher) {
         hasher.combine(id)
     }
+
+    static func == (lhs: Book, rhs: Book) -> Bool {
+        lhs.hashValue == rhs.hashValue
+    }
 }
 
 /// Struct to represent a borrower
-struct Borrower: CustomStringConvertible, Identifiable, Codable, Hashable {
+struct Borrower: CustomStringConvertible, Identifiable, Hashable, Equatable {
     /// Borrower ID.
     let id: UUID
 
@@ -35,17 +41,21 @@ struct Borrower: CustomStringConvertible, Identifiable, Codable, Hashable {
     /// Borrower's date of birth
     var age: Int
 
-    var description: String {
-        "Borrower \(firstName) \(lastName) is \(age) year(s) old"
-    }
+    var fullName: String { "\(firstName) \(lastName)" }
+
+    var description: String { "Borrower \(firstName) \(lastName) (\( age ) years old) | ID: \(id)" }
 
     func hash(into hasher: inout Hasher) {
         hasher.combine(id)
     }
+
+    static func == (lhs: Borrower, rhs: Borrower) -> Bool {
+        return lhs.hashValue == rhs.hashValue
+    }
 }
 
 /// Struct to represent a Book loan
-struct Loan: CustomStringConvertible, Hashable {
+struct Loan: CustomStringConvertible, Hashable, Equatable {
     /// The book that is being loaned
     let book: Book
 
@@ -63,13 +73,18 @@ struct Loan: CustomStringConvertible, Hashable {
 
     var description: String {
         let isWas = isOverdue ? "was" : "is"
-        return "\(borrower.firstName)'s issued book \(book.title) (ISBN \(book.id)) \(isWas) due back \(UI.formatDate(returnDate))"
+        return
+            "\(borrower.firstName)'s issued book \(book.title) (ISBN \(book.id)) \(isWas) due back \(UI.formatDate(returnDate))"
     }
 
     // Hash the book ID, borrower ID and return date together.
     func hash(into hasher: inout Hasher) {
-        hasher.combine(book.id) 
+        hasher.combine(book.id)
         hasher.combine(borrower.id)
         hasher.combine(returnDate)
+    }
+
+    static func == (lhs: Loan, rhs: Loan) -> Bool {
+        return lhs.hashValue == rhs.hashValue
     }
 }

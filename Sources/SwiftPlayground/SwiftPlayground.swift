@@ -9,46 +9,49 @@ let yearInSeconds: Double = 3.154e+7
 struct SwiftPlayground {
     static func main() {
         var isRunning: Bool = true
+        let dateFormatter = DateFormatter()
+        dateFormatter.dateFormat = "dd/MM/yyyy"
+        dateFormatter.timeZone = TimeZone(abbreviation: "NZ")
 
+        /// Books available in the library
         var books: Set<Book> = [
-            Book(id: 123, title: "abci", author: "abc"),
-            Book(id: 9_780435_124090, title: "The Handmaid's Tale", author: "Margaret Atwood"),
-            Book(id: 9_781775_542483, title: "Budget like a legend", author: "Cameron Wislang"),
-            Book(
-                id: 9_718856_694414, title: "Colour: how to user colour in art and design",
-                author: "Edith Anderson Feisner"),
+            Book(id: 123, title: "Test2", author: "John2", genre: "Test2")
+            // Book(id: 9_923782_123784, title: "abci", author: "abc", genre: "abc"),
+            // Book(
+            //     id: 9_780435_124090, title: "The Handmaid's Tale", author: "Margaret Atwood",
+            //     genre: "Speculative Fiction"),
+            // Book(
+            //     id: 9_781775_542483, title: "Budget like a legend", author: "Cameron Wislang",
+            //     genre: "Educational"),
+            // Book(
+            //     id: 9_718856_694414, title: "Colour: how to user colour in art and design",
+            //     author: "Edith Anderson Feisner", genre: "Non-fiction"),
+            // Book(id: 9_781784_878979, title: "1984", author: "George orwell", genre: "Dystopia"),
         ]
 
+        /// Borrowers registered in the library
         var borrowers: Set<Borrower> = [
-            Borrower(
-                id: UUID(), firstName: "Greg", lastName: "test", age: 20)
+            Borrower(id: UUID(), firstName: "Greg", lastName: "Test", age: 30)
+            // Borrower(id: UUID(), firstName: "Greg", lastName: "test", age: 20),
+            // Borrower(id: UUID(), firstName: "Greg", lastName: "test2", age: 40),
+            // Borrower(id: UUID(), firstName: "OtherPerson", lastName: "InTheCall", age: 20),
         ]
 
-        let loans: Set<Loan> = [
+        /// Book loans (both historic and not)
+        var loans: Set<Loan> = [
             Loan(
-                book: books[books.startIndex], borrower: borrowers.first!,
-                returnDate: Date(timeIntervalSinceNow: 1 * 60 * 60)),
-
-            Loan(
-                book: books[books.index(books.startIndex, offsetBy: 1)], borrower: borrowers.first!,
-                returnDate: Date(timeIntervalSinceNow: -1 * 60 * 60)),
+                book: books[books.startIndex],
+                borrower: borrowers[borrowers.startIndex],
+                returnDate: dateFormatter.date(from: "11/11/2026") ?? Date.now)
         ]
-
-        print(books.first!)
-
-        UI.showOverdueLoans(loans: loans)
-
-        print(UI.findBook(books: books, bookName: getStringFromUser("Test")) ?? "Fuck you")
-
-        _ = readLine()
 
         while /*program*/ isRunning {
             print(
                 """
                 \u{001b}[2J\u{001b}[H---Available options---
-                [l]: Manage loans
                 [b]: Manage books
                 [u]: Manage borrowers
+                [l]: Manage loans
 
                 [?]: Help
                 [q]: Quit
@@ -57,13 +60,11 @@ struct SwiftPlayground {
 
             switch getStringFromUser("Enter an option", length: 1...1).lowercased() {
             case "l":
-                print("loans")
+                UI.manageLoans(loans: &loans, borrowers: borrowers, books: books)
             case "b":
                 UI.manageBooks(books: &books)
             case "u":
-                print("borrowers")
-                UI.addBorrower(borrowers: &borrowers)
-
+                UI.manageBorrowers(borrowers: &borrowers)
             case "?":
                 print("Help")
             case "q":
@@ -74,8 +75,9 @@ struct SwiftPlayground {
             }
         }
 
-        print(loans)
-        print(borrowers)
-        print(books)
+        UI.listBooks(books: books)
+        UI.listBorrowers(borrowers: borrowers)
+        UI.listLoans(loans: loans)
+
     }
 }
