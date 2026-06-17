@@ -5,6 +5,8 @@ import GRDB
 @main
 struct SwiftPlayground {
     static func main() {
-        print("Hello, world!")
+        guard let dbQueue: DatabaseQueue = try? DatabaseQueue(path: "./BHSJapaneseDept.db") else {
+            fatalError("Failed to create/open the database.")
+        }
     }
 }
