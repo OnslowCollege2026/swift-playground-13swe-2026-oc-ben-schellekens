@@ -1,7 +1,6 @@
 // School library book borrowing system
 // No database (not confident enough)
 import Foundation
-import GRDB
 
 @main
 struct SwiftPlayground {
