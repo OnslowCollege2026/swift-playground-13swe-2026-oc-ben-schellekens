@@ -36,6 +36,8 @@ struct SwiftPlayground {
                     t.column("returnDate", .datetime)
                 }
             }
+
+            try dbQueue.read { db in try db.dumpSchema() }
         } catch {
             print(error)
             print(type(of: error))
