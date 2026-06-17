@@ -1,5 +1,4 @@
-// School library book borrowing system
-// No database (not confident enough)
+// Bungee High School Japanese Department Item Borrowing System
 import Foundation
 import GRDB
 
