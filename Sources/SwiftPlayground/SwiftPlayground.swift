@@ -113,7 +113,7 @@ struct SwiftPlayground {
                     t.column("id", .integer).primaryKey(autoincrement: true)
                     t.column("givenName", .text).notNull().check { (0...50).contains(length($0)) }
                     t.column("familyName", .text).notNull().check { (0...50).contains(length($0)) }
-                    t.column("borrowerType", .integer).notNull()
+                    t.column("borrowerType", .integer).notNull().check { (0...1).contains($0)}
                     t.column("yearLevel", .integer)
                     t.column("email", .text).notNull()
                 }
@@ -121,8 +121,8 @@ struct SwiftPlayground {
                 try db.create(table: "Item", ifNotExists: true) { t in
                     t.column("id", .integer).primaryKey(autoincrement: true)
                     t.column("itemName", .text).notNull().check { (0...50).contains(length($0)) }
-                    t.column("itemCategory", .integer).notNull()
-                    t.column("itemCondition", .integer).notNull()
+                    t.column("itemCategory", .integer).notNull().check { (0...7).contains($0) }
+                    t.column("itemCondition", .integer).notNull().check { (0...5).contains($0) }
                 }
 
                 try db.create(table: "Loan", ifNotExists: true) { t in
