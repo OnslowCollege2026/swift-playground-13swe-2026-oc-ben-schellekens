@@ -33,7 +33,7 @@ struct Borrower: Identifiable, Codable, FetchableRecord, PersistableRecord {
     var yearLevel: Int?
     var email: String
 
-    // enum CodingKeys: String, CodingKey { 
+    // enum CodingKeys: String, CodingKey {
     //     var id: Int64? = nil
     //     var givenName: String
     //     var familyName: String
@@ -42,7 +42,7 @@ struct Borrower: Identifiable, Codable, FetchableRecord, PersistableRecord {
     //     var email: String
     // }
 
-    enum Columns { 
+    enum Columns {
         static let id = Column(CodingKeys.id)
         static let givenName = Column(CodingKeys.givenName)
         static let familyName = Column(CodingKeys.familyName)
@@ -65,7 +65,7 @@ struct Item: Identifiable, Codable, FetchableRecord, PersistableRecord {
     //     var itemCondition: ItemCondition
     // }
 
-    enum Columns { 
+    enum Columns {
         static let id = Column(CodingKeys.id)
         static let itemName = Column(CodingKeys.itemName)
         static let itemCategory = Column(CodingKeys.itemCategory)
@@ -87,7 +87,7 @@ struct Loan: Identifiable, Codable, FetchableRecord, PersistableRecord {
     //     var itemId: Int64
     //     var loanDate: Date
     //     var dueDate: Date
-    //     var returnDate: Date? 
+    //     var returnDate: Date?
     // }
 
     enum Columns {
@@ -113,7 +113,7 @@ struct SwiftPlayground {
                     t.column("id", .integer).primaryKey(autoincrement: true)
                     t.column("givenName", .text).notNull().check { (0...50).contains(length($0)) }
                     t.column("familyName", .text).notNull().check { (0...50).contains(length($0)) }
-                    t.column("borrowerType", .integer).notNull().check { (0...1).contains($0)}
+                    t.column("borrowerType", .integer).notNull().check { (0...1).contains($0) }
                     t.column("yearLevel", .integer)
                     t.column("email", .text).notNull()
                 }
