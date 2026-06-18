@@ -3,8 +3,8 @@ import Foundation
 import GRDB
 
 enum BorrowerType: Int, Codable {
-    case staff
     case student
+    case staff
 }
 
 enum ItemCategory: Int, Codable {
