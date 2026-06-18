@@ -116,6 +116,8 @@ struct SwiftPlayground {
                     t.column("borrowerType", .integer).notNull().check { (0...1).contains($0) }
                     t.column("yearLevel", .integer)
                     t.column("email", .text).notNull()
+                    let borrowerType = Column("borrowerType")
+                    let yearLevel = Column("yearLevel")
                     t.check(borrowerType == 0 && yearLevel != nil) // Students need a yearLevel
                     t.check(borrowerType == 1 && yearLevel == nil) // Staff dont have a yearLevel
                 }
