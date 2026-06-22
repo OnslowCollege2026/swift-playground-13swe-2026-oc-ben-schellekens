@@ -93,8 +93,9 @@ struct SwiftPlayground {
                     t.column("email", .text).notNull()
                     let borrowerType = Column("borrowerType")
                     let yearLevel = Column("yearLevel")
-                    t.check(borrowerType == 0 && yearLevel != nil) // Students need a yearLevel
-                    t.check(borrowerType == 1 && yearLevel == nil) // Staff dont have a yearLevel
+                    t.check(
+                        (borrowerType == 0 && yearLevel != nil) // Students need a yearlevel
+                            || (borrowerType == 1 && yearLevel == nil)) // Staff dont have one
                 }
 
                 try db.create(table: "Item", ifNotExists: true) { t in
