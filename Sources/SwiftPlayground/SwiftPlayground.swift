@@ -86,11 +86,11 @@ struct SwiftPlayground {
             try dbQueue.write { db in
                 try db.create(table: "Borrower", ifNotExists: true) { t in
                     t.column("id", .integer).primaryKey(autoincrement: true)
-                    t.column("givenName", .text).notNull().check { (0...50).contains(length($0)) }
-                    t.column("familyName", .text).notNull().check { (0...50).contains(length($0)) }
+                    t.column("givenName", .text).notNull().check { (1...50).contains(length($0)) }
+                    t.column("familyName", .text).notNull().check { (1...50).contains(length($0)) }
                     t.column("borrowerType", .integer).notNull().check { (0...1).contains($0) }
                     t.column("yearLevel", .integer)
-                    t.column("email", .text).notNull()
+                    t.column("email", .text).notNull().check { (6...50).contains(length($0)) }
                     let borrowerType = Column("borrowerType")
                     let yearLevel = Column("yearLevel")
                     t.check(
