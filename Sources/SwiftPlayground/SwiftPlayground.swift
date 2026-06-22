@@ -33,15 +33,6 @@ struct Borrower: Identifiable, Codable, FetchableRecord, PersistableRecord {
     var yearLevel: Int?
     var email: String
 
-    // enum CodingKeys: String, CodingKey {
-    //     var id: Int64? = nil
-    //     var givenName: String
-    //     var familyName: String
-    //     var borrowerType: BorrowerType
-    //     var yearLevel: Int?
-    //     var email: String
-    // }
-
     enum Columns {
         static let id = Column(CodingKeys.id)
         static let givenName = Column(CodingKeys.givenName)
@@ -58,13 +49,6 @@ struct Item: Identifiable, Codable, FetchableRecord, PersistableRecord {
     var itemCategory: ItemCategory
     var itemCondition: ItemCondition
 
-    // enum CodingKeys: String, CodingKey {
-    //     var id: Int64? = nil
-    //     var itemName: String
-    //     var itemCategory: ItemCategory
-    //     var itemCondition: ItemCondition
-    // }
-
     enum Columns {
         static let id = Column(CodingKeys.id)
         static let itemName = Column(CodingKeys.itemName)
@@ -80,15 +64,6 @@ struct Loan: Identifiable, Codable, FetchableRecord, PersistableRecord {
     var loanDate: Date
     var dueDate: Date
     var returnDate: Date?
-
-    // enum CodingKeys: String, CodingKey {
-    //     var id: Int64? = nil
-    //     var borrowerId: Int64
-    //     var itemId: Int64
-    //     var loanDate: Date
-    //     var dueDate: Date
-    //     var returnDate: Date?
-    // }
 
     enum Columns {
         static let id = Column(CodingKeys.id)
