@@ -2,6 +2,6 @@ run:
 	swift run
 
 reset:
-	[ -f ./BHSJapaneseDept.db ] && rm ./BHSJapaneseDept.db
+	rm -f ./BHSJapaneseDept.db
 
 rr: reset run
