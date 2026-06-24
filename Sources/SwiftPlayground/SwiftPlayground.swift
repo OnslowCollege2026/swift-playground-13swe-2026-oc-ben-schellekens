@@ -100,7 +100,7 @@ struct SwiftPlayground {
 
                 try db.create(table: "Item", ifNotExists: true) { t in
                     t.column("id", .integer).primaryKey(autoincrement: true)
-                    t.column("itemName", .text).notNull().check { (0...50).contains(length($0)) }
+                    t.column("itemName", .text).notNull().check { (1...50).contains(length($0)) }
                     t.column("itemCategory", .integer).notNull().check { (0...7).contains($0) }
                     t.column("itemCondition", .integer).notNull().check { (0...5).contains($0) }
                 }
