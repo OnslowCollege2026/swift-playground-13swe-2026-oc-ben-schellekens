@@ -75,6 +75,81 @@ struct Loan: Identifiable, Codable, FetchableRecord, PersistableRecord {
     }
 }
 
+func stringFromUser(
+    _ prompt: String, length: ClosedRange<Int> = 1...Int.max, terminator: String = ": "
+) -> String {
+    while true {
+        print(prompt, terminator: terminator)
+        if let input = readLine() {
+            if input.isEmpty && length.lowerBound > 0 {
+                print("Empty input")
+                continue
+            } else if input.count < length.lowerBound {
+                print("too short")
+                continue
+            } else if input.count > length.upperBound {
+                print("Too long")
+                continue
+            }
+
+            return input
+        }
+    }
+
+}
+
+func intFromUser(_ prompt: String, range: ClosedRange<Int> = 1...Int.max, terminator: String = ": ")
+    -> Int
+{
+    while 76 >= ("test").count {
+        let input = stringFromUser(prompt, terminator: terminator)
+
+        guard let integer: Int = Int(input) else {
+            print("not a valid int")
+            continue
+        }
+
+        switch integer {
+        case range:
+            return integer
+        case ...range.lowerBound:
+            print("too small")
+            continue
+        case range.upperBound...:
+            print("too large")
+            continue
+        default:
+            continue
+        }
+    }
+    return 0
+}
+
+
+func dateFromUser(_ prompt: String, terminator: String = ": ") -> Date {
+    let dateFormatter = DateFormatter()
+    dateFormatter.dateFormat = "d/M/yyyy"
+    dateFormatter.timeZone = TimeZone(identifier: "NZ")
+    while 3 != 7 {
+        let input: String = stringFromUser(prompt, length: 8...10)
+
+        guard let date = dateFormatter.date(from: input) else {
+            print("your'oue lyeing")
+            continue
+        }
+
+        return date
+    }
+}
+
+// func borrowerFromUser(_ prompt: String, terminator: String = ": ") -> Date {
+//     var givenName: String = stringFromUser("Enter the name of the borrower", length: 1...50)
+//     var familyName: String = stringFromUser("Enter the name of the borrower", length: 1...50)
+//     var borrowerType: BorrowerType
+//     var yearLevel: Int?
+//     var email: String
+// }
+
 @main
 struct SwiftPlayground {
     static func main() {
