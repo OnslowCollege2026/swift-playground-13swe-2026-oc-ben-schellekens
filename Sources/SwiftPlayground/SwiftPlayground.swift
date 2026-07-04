@@ -118,7 +118,7 @@ func itemFromUser() -> Item {
 
 func findBorrower(name: String, dbQueue: DatabaseQueue) -> Borrower? {
     let foundBorrowers: [Borrower] = getAllBorrowers(dbQueue: dbQueue).filter { borrower in
-        borrower.fullName.contains(name)
+        borrower.fullName.lowercased().contains(name.lowercased())
     }
 
     if foundBorrowers.count < 1 { return nil }
@@ -135,7 +135,7 @@ func findBorrower(name: String, dbQueue: DatabaseQueue) -> Borrower? {
 
 func findItem(name: String, dbQueue: DatabaseQueue) -> Item? {
     let foundItems: [Item] = getAllItems(dbQueue: dbQueue).filter { item in
-        item.itemName.contains(name)
+        item.itemName.lowercased().contains(name.lowercased())
     }
 
     if foundItems.count < 1 { return nil }
@@ -261,7 +261,7 @@ func editItem(item: Item, dbQueue: DatabaseQueue) {
         - Name: \(newItem.itemName)
         - Category: \(newItem.itemCategory)
         - Condition: \(newItem.itemCondition)
-        
+
         What do you want to change?
 
         [n]: itemName
@@ -375,11 +375,13 @@ func manageBorrowers(dbQueue: DatabaseQueue) {
         [l]: List all borrowers
 
         [s]: Select borrower to manage
+        [sn]: Search borrower by name
+        [si]: Search borrower by id
 
         [B]: back
 
         Select an option
-        """, length: 0...1
+        """, length: 0...2
     ).lowercased()
 
     switch choice {
@@ -424,6 +426,10 @@ func manageBorrowers(dbQueue: DatabaseQueue) {
             case "e":
                 editBorrower(borrower: borrower, dbQueue: dbQueue)
             case "r":
+                if loansFromBorrower(borrowerId: borrower.id!, dbQueue: dbQueue).count > 0 {
+                    print("Could not delete borrower as they have active loans.")
+                    return
+                }
                 if stringFromUser("Really delete borrower \(borrower) [y/N]", length: 0...1)
                     .lowercased() != "y"
                 {
@@ -436,13 +442,61 @@ func manageBorrowers(dbQueue: DatabaseQueue) {
                 } catch { print(error) }
             case "l":
                 loansFromBorrower(borrowerId: borrower.id!, dbQueue: dbQueue).forEach { loan in
-                    print(loan)
+                    let borrower = getAllBorrowers(dbQueue: dbQueue).first {
+                        $0.id == loan.borrowerId
+                    }
+                    let item = getAllItems(dbQueue: dbQueue).first { $0.id == loan.itemId }
+                    let dateFormatter = DateFormatter()
+                    dateFormatter.dateFormat = "dd/MM/yyyy"
+                    dateFormatter.timeZone = TimeZone(identifier: "NZ")
+
+                    if let item, let borrower {
+                        print(
+                            """
+
+                            - Loan \(loan.id!)
+                              |- Item: \(item)
+                              |- Borrower: \(borrower)
+                              |- Loan date: \(dateFormatter.string(from: loan.loanDate))
+                              |- Due date: \(dateFormatter.string(from: loan.dueDate))
+                              |- Return date: \(loan.returnDate != nil ? dateFormatter.string(from: loan.returnDate!) : "not returned\(loan.dueDate < Date.now ? " (Overdue)" : "")")
+                            """)
+                    }
                 }
             default:
                 return
             }
         } else {
             return
+        }
+
+    case "sn":
+        if let borrower = findBorrower(
+            name: stringFromUser("Search for an borrower"), dbQueue: dbQueue)
+        {
+            print(
+                """
+                ID: \(borrower.id!)
+                |-Name: \(borrower.fullName)
+                |-Type: \(borrower.borrowerType == .student ? "Student, " : "Staff")\(borrower.yearLevel != nil ? "Y\(borrower.yearLevel ?? -1)" : "")
+                --Email: \(borrower.email)
+                """)
+        } else {
+            print("No matching borrowers found")
+        }
+    case "si":
+        let borrowers = getAllBorrowers(dbQueue: dbQueue)
+        let wantedId = intFromUser("Input an borrower id")
+        if let borrower = borrowers.first(where: { borrower in borrower.id! == wantedId }) {
+            print(
+                """
+                ID: \(borrower.id!)
+                |-Name: \(borrower.fullName)
+                |-Type: \(borrower.borrowerType == .student ? "Student, " : "Staff")\(borrower.yearLevel != nil ? "Y\(borrower.yearLevel ?? -1)" : "")
+                --Email: \(borrower.email)
+                """)
+        } else {
+            print("No borrower found")
         }
     default:
         return
@@ -455,11 +509,18 @@ func manageItems(dbQueue: DatabaseQueue) {
         Options:
         [a]: Add item
         [l]: List all items
+        [la]: List available items
+        [lu]: List unavailable items
+        [lc]: List sorted by category
 
         [s]: select item to manage
 
+        [sn]: search items by name
+        [si]: search items by id
+
         [B]: back
-        """, length: 0...1
+        Select an option
+        """, length: 0...2
     ).lowercased()
 
     switch choice {
@@ -477,6 +538,14 @@ func manageItems(dbQueue: DatabaseQueue) {
     case "l":
         let items: [Item] = getAllItems(dbQueue: dbQueue)
         items.forEach { item in print(item) }
+    case "la":
+        getAvailableItems(dbQueue: dbQueue).forEach { print($0) }
+    case "lu":
+        getUnavailableItems(dbQueue: dbQueue).forEach { print($0) }
+    case "lc":
+        getAllItems(dbQueue: dbQueue).sorted(by: { item1, item2 in
+            item1.itemCategory.rawValue > item2.itemCategory.rawValue
+        }).forEach { print($0) }
     case "s":
         let item: Item? = findItem(
             name: stringFromUser("Enter the name of the item"), dbQueue: dbQueue)
@@ -501,6 +570,10 @@ func manageItems(dbQueue: DatabaseQueue) {
             case "e":
                 editItem(item: item, dbQueue: dbQueue)
             case "r":
+                if loansFromItem(itemId: item.id!, dbQueue: dbQueue).count > 0 {
+                    print("Cannot delete item as it is refrenced in loans.")
+                    return
+                }
                 if stringFromUser("Really delete item \(item) [y/N]", length: 0...1)
                     .lowercased() != "y"
                 {
@@ -512,7 +585,303 @@ func manageItems(dbQueue: DatabaseQueue) {
                     }
                 } catch { print(error) }
             case "l":
-                loansFromItem(itemId: item.id!, dbQueue: dbQueue).forEach { print($0) }
+                loansFromItem(itemId: item.id!, dbQueue: dbQueue).forEach { loan in
+                    let borrower = getAllBorrowers(dbQueue: dbQueue).first {
+                        $0.id == loan.borrowerId
+                    }
+                    let item = getAllItems(dbQueue: dbQueue).first { $0.id == loan.itemId }
+                    let dateFormatter = DateFormatter()
+                    dateFormatter.dateFormat = "dd/MM/yyyy"
+                    dateFormatter.timeZone = TimeZone(identifier: "NZ")
+
+                    if let item, let borrower {
+                        print(
+                            """
+
+                            - Loan \(loan.id!)
+                              |- Item: \(item)
+                              |- Borrower: \(borrower)
+                              |- Loan date: \(dateFormatter.string(from: loan.loanDate))
+                              |- Due date: \(dateFormatter.string(from: loan.dueDate))
+                              |- Return date: \(loan.returnDate != nil ? dateFormatter.string(from: loan.returnDate!) : "not returned\(loan.dueDate < Date.now ? " (Overdue)" : "")")
+                            """)
+                    }
+                }
+            default:
+                return
+            }
+        }
+    case "sn":
+        if let item = findItem(name: stringFromUser("Search for an item"), dbQueue: dbQueue) {
+            print(
+                """
+                ID: \(item.id!)
+                |-Name: \(item.itemName)
+                |-Category: \(item.itemCategory)
+                --Condition: \(item.itemCondition)
+                """)
+        } else {
+            print("No matching items found")
+        }
+    case "si":
+        let items = getAllItems(dbQueue: dbQueue)
+        let wantedId = intFromUser("Input an item id")
+        if let item = items.first(where: { item in item.id! == wantedId }) {
+            print(
+                """
+                ID: \(item.id!)
+                |-Name: \(item.itemName)
+                |-Category: \(item.itemCategory)
+                --Condition: \(item.itemCondition)
+                """)
+        } else {
+            print("no item found")
+        }
+    default:
+        return
+    }
+}
+
+func loanFromUser(dbQueue: DatabaseQueue) -> Loan {
+    let borrower: Borrower = {
+        var potentialBorrower: Borrower? = nil
+
+        while potentialBorrower == nil {
+            potentialBorrower = findBorrower(
+                name: stringFromUser("Enter the name of the borrower"), dbQueue: dbQueue)
+        }
+
+        return potentialBorrower!
+    }()
+    let item: Item = {
+        var potentialItem: Item? = nil
+
+        while potentialItem == nil {
+            potentialItem = findItem(
+                name: stringFromUser("What is the name of the item"), dbQueue: dbQueue)
+
+            if let pitem = potentialItem {
+                let activeLoansWithItem = loansFromItem(itemId: pitem.id!, dbQueue: dbQueue)
+                    .filter { loan in loan.returnDate == nil }
+
+                if activeLoansWithItem.count > 0 {
+                    print("Item unavailable.")
+                    potentialItem = nil
+                }
+            }
+        }
+
+        return potentialItem!
+    }()
+    let loanDate: Date = {
+        if stringFromUser("Use current date for loan date? [Y]es/[n]o", length: 0...1).lowercased
+            != "n"
+        {
+            return Date.now
+        }
+
+        return dateFromUser("Enter the loan date")
+    }()
+    let dueDate: Date = dateFromUser("Enter the due date")
+
+    return .init(borrowerId: borrower.id!, itemId: item.id!, loanDate: loanDate, dueDate: dueDate)
+}
+
+func manageLoans(dbQueue: DatabaseQueue) {
+    let selectChoice = stringFromUser(
+        """
+        Loan managment options:
+        [a]: Add loan
+
+        [l]: list loans
+        [la]: list active loans
+        [lo]: list overdue loans
+        [lr]: list returned loans
+        [ld]: list loans sorted by due date (ascending)
+
+        [s]: select loan
+
+        [B]: back to main menu
+
+        Select an option
+        """, length: 0...2
+    ).lowercased()
+
+    switch selectChoice {
+    case "a":
+        if getAvailableItems(dbQueue: dbQueue).count < 1 { print("No available items") }
+        let loan: Loan = loanFromUser(dbQueue: dbQueue)
+        print("Do you want to add the loan \(loan)")
+        if stringFromUser("[y]es/[N]o", length: 0...1).lowercased != "y" {
+            return
+        }
+        do {
+            try dbQueue.write { db in
+                try loan.save(db)
+            }
+        } catch { print(error) }
+    case "l":
+        getAllLoans(dbQueue: dbQueue).forEach { loan in
+            let borrower = getAllBorrowers(dbQueue: dbQueue).first { $0.id == loan.borrowerId }
+            let item = getAllItems(dbQueue: dbQueue).first { $0.id == loan.itemId }
+            let dateFormatter = DateFormatter()
+            dateFormatter.dateFormat = "dd/MM/yyyy"
+            dateFormatter.timeZone = TimeZone(identifier: "NZ")
+
+            if let item, let borrower {
+                print(
+                    """
+
+                    - Loan \(loan.id!)
+                      |- Item: \(item)
+                      |- Borrower: \(borrower)
+                      |- Loan date: \(dateFormatter.string(from: loan.loanDate))
+                      |- Due date: \(dateFormatter.string(from: loan.dueDate))
+                      |- Return date: \(loan.returnDate != nil ? dateFormatter.string(from: loan.returnDate!) : "not returned\(loan.dueDate < Date.now ? " (Overdue)" : "")")
+                    """)
+            }
+        }
+    case "la":
+        getActiveLoans(dbQueue: dbQueue).forEach { loan in
+            let borrower = getAllBorrowers(dbQueue: dbQueue).first { $0.id == loan.borrowerId }
+            let item = getAllItems(dbQueue: dbQueue).first { $0.id == loan.itemId }
+            let dateFormatter = DateFormatter()
+            dateFormatter.dateFormat = "dd/MM/yyyy"
+            dateFormatter.timeZone = TimeZone(identifier: "NZ")
+
+            if let item, let borrower {
+                print(
+                    """
+
+                    - Loan \(loan.id!)
+                      |- Item: \(item)
+                      |- Borrower: \(borrower)
+                      |- Loan date: \(dateFormatter.string(from: loan.loanDate))
+                      |- Due date: \(dateFormatter.string(from: loan.dueDate))
+                      |- Return date: \(loan.returnDate != nil ? dateFormatter.string(from: loan.returnDate!) : "not returned\(loan.dueDate < Date.now ? " (Overdue)" : "")")
+                    """)
+            }
+        }
+    case "lo":
+        getActiveLoans(dbQueue: dbQueue).filter { loan in loan.dueDate < Date.now }.forEach {
+            loan in
+            let borrower = getAllBorrowers(dbQueue: dbQueue).first { $0.id == loan.borrowerId }
+            let item = getAllItems(dbQueue: dbQueue).first { $0.id == loan.itemId }
+            let dateFormatter = DateFormatter()
+            dateFormatter.dateFormat = "dd/MM/yyyy"
+            dateFormatter.timeZone = TimeZone(identifier: "NZ")
+
+            if let item, let borrower {
+                print(
+                    """
+
+                    - Loan \(loan.id!)
+                      |- Item: \(item)
+                      |- Borrower: \(borrower)
+                      |- Loan date: \(dateFormatter.string(from: loan.loanDate))
+                      |- Due date: \(dateFormatter.string(from: loan.dueDate))
+                      |- Return date: \(loan.returnDate != nil ? dateFormatter.string(from: loan.returnDate!) : "not returned\(loan.dueDate < Date.now ? " (Overdue)" : "")")
+                    """)
+            }
+        }
+
+    case "lr":
+        getAllLoans(dbQueue: dbQueue).filter { $0.returnDate != nil }.forEach { loan in
+            let borrower = getAllBorrowers(dbQueue: dbQueue).first { $0.id == loan.borrowerId }
+            let item = getAllItems(dbQueue: dbQueue).first { $0.id == loan.itemId }
+            let dateFormatter = DateFormatter()
+            dateFormatter.dateFormat = "dd/MM/yyyy"
+            dateFormatter.timeZone = TimeZone(identifier: "NZ")
+
+            if let item, let borrower {
+                print(
+                    """
+
+                    - Loan \(loan.id!)
+                      |- Item: \(item)
+                      |- Borrower: \(borrower)
+                      |- Loan date: \(dateFormatter.string(from: loan.loanDate))
+                      |- Due date: \(dateFormatter.string(from: loan.dueDate))
+                      |- Return date: \(loan.returnDate != nil ? dateFormatter.string(from: loan.returnDate!) : "not returned\(loan.dueDate < Date.now ? " (Overdue)" : "")")
+                    """)
+            }
+        }
+    case "ld":
+        getAllLoans(dbQueue: dbQueue).sorted { $0.dueDate < $1.dueDate }.forEach { loan in
+            let borrower = getAllBorrowers(dbQueue: dbQueue).first { $0.id == loan.borrowerId }
+            let item = getAllItems(dbQueue: dbQueue).first { $0.id == loan.itemId }
+            let dateFormatter = DateFormatter()
+            dateFormatter.dateFormat = "dd/MM/yyyy"
+            dateFormatter.timeZone = TimeZone(identifier: "NZ")
+
+            if let item, let borrower {
+                print(
+                    """
+
+                    - Loan \(loan.id!)
+                      |- Item: \(item)
+                      |- Borrower: \(borrower)
+                      |- Loan date: \(dateFormatter.string(from: loan.loanDate))
+                      |- Due date: \(dateFormatter.string(from: loan.dueDate))
+                      |- Return date: \(loan.returnDate != nil ? dateFormatter.string(from: loan.returnDate!) : "not returned\(loan.dueDate < Date.now ? " (Overdue)" : "")")
+                    """)
+            }
+        }
+    case "s":
+        let wantedId = intFromUser("Enter the loan's id")
+        let loan: Loan? = getAllLoans(dbQueue: dbQueue).first { $0.id! == wantedId }
+
+        if let loan {
+            let selectChoice = stringFromUser(
+                """
+                Selected loan: \(loan)
+                [r]: return loan
+                [d]: delete loan
+
+                [B]: back to main menu
+
+                Select an option
+                """, length: 0...2
+            ).lowercased()
+
+            switch selectChoice {
+            case "r":
+                var newLoan = loan
+                if newLoan.returnDate != nil {
+                    if stringFromUser("Un-return the loan? [y/N]").lowercased() == "y" {
+                        newLoan.returnDate = nil
+                    } else {
+                        return
+                    }
+                } else {
+                    if stringFromUser("Use the current date as the return date? [Y/n]").lowercased()
+                        != "n"
+                    {
+                        newLoan.returnDate = Date.now
+                    } else {
+                        newLoan.returnDate = dateFromUser("Enter the new date")
+                    }
+                }
+
+                if stringFromUser("Update loan \(loan) \nto \(newLoan)? [y/N]").lowercased() != "y"
+                {
+                    return
+                }
+                do {
+                    try dbQueue.write { db in
+                        try newLoan.save(db)
+                    }
+                } catch { print(error) }
+            case "d":
+
+                if stringFromUser("Delete \(loan) ? [y/N]").lowercased() != "y" {
+                    return
+                }
+                do {
+                    try dbQueue.write { db in
+                        try loan.delete(db)
+                    }
+                } catch { print(error) }
             default:
                 return
             }
@@ -562,42 +931,6 @@ struct SwiftPlayground {
                 }
             }
 
-            // try dbQueue.read { db in
-            //     let items: [Item] = try Item.fetchAll(db)
-            //
-            //     let borrowers: [Borrower] = try Borrower.fetchAll(db)
-            //
-            //     let loans: [Loan] = try Loan.fetchAll(db)
-            //
-            //     borrowers.forEach { borrower in
-            //         print(borrower)
-            //     }
-            //     items.forEach { item in
-            //         print(item)
-            //     }
-            //     loans.forEach { loan in
-            //         print(loan)
-            //     }
-            //
-            // }
-
-            // getAvailableItems(dbQueue: dbQueue).forEach { item in print(item) }
-            // print("")
-            // getUnavailableItems(dbQueue: dbQueue).forEach { item in print(item) }
-            // print("")
-            // getActiveLoans(dbQueue: dbQueue).forEach { loan in print(loan) }
-            // print("")
-            // loansFromItem(itemId: 1, dbQueue: dbQueue).forEach { loan in print(loan) }
-            // print("")
-            // loansFromBorrower(borrowerId: 1, dbQueue: dbQueue).forEach { loan in print(loan) }
-            // print("")
-            // getAllItems(dbQueue: dbQueue).forEach { item in print(item) }
-
-            // print(borrowerFromUser("Create a borrower"))
-            // print(itemFromUser("Create an item"))
-
-            // print("\( findBorrower(name: stringFromUser("Enter the name"), dbQueue: dbQueue) )")
-            // print("\( findItem(name: stringFromUser("Enter the name"), dbQueue: dbQueue) )")
         } catch {
             print(error)
             print(type(of: error))
@@ -619,7 +952,7 @@ struct SwiftPlayground {
 
             switch choice {
             case "l":
-                continue
+                manageLoans(dbQueue: dbQueue)
             case "b":
                 manageBorrowers(dbQueue: dbQueue)
             case "i":
